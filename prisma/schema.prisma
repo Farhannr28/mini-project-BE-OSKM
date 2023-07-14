@@ -16,27 +16,27 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
-model User {
-    id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-    nim          String   @unique
-    passwordHash String
-    role         UserRole @default(USER)
-    createdAt    DateTime @default(now())
-    updatedAt    DateTime @default(now()) @updatedAt
-    version      Int      @default(0) // Comment this line if you don't want optimistic concurrency control
-    isDeleted    Boolean  @default(false) // Comment this line if you don't want soft delete
+model Student {
+    id          String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+    first_name  String
+    last_name   String
+
+    enrollment  Enrollment[]
 }
 
-model Example {
-    id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-    message   String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @default(now()) @updatedAt
-    version   Int      @default(0) // Comment this line if you don't want optimistic concurrency control
-    isDeleted Boolean  @default(false) // Comment this line if you don't want soft delete
+model Enrollment {
+    id               String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+    enrollment_date  DateTime   @default(now())
+    student_id       String     @unique @db.Uuid
+    student          Student    @relation(fields: [student_id], references: [id])
+    course_id        String     @unique @db.Uuid
+    course           Course     @relation(fields: [course_id], references: [id])
 }
 
-enum UserRole {
-    ADMIN
-    USER
+model Course {
+    id       String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+    name     String  
+    credits  Int
+
+    enrollment Enrollment[]
 }
